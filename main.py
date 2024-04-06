@@ -1,3 +1,8 @@
+import os
+from openai import OpenAI
+from dotenv import load_dotenv
+
+
 def get_letters():
     center_letter = input("Enter the center letter: ")
     outside_letters = input("Enter the outside letters (excluding the center letter): ")
@@ -16,7 +21,29 @@ def find_valid_words(center_letter, letters):
         return valid_words
 
 
+def generate_hints(word_list):
+    load_dotenv()
+    openai_client = OpenAI(
+        api_key=os.environ.get("OPENAI_API_KEY"),
+    )
+    prompt = """
+        You must take the following words and create crossword-style hints for each word.
+        The list must be numbered.
+        Append each hint with the length of the solution word.
+    """
+
+    response = openai_client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": prompt},
+            {"role": "user", "content": ",".join(word_list)},
+        ],
+    )
+    return response.choices[0].message.content
+
+
 if __name__ == "__main__":
     center_letter, letters = get_letters()
     valid_words = find_valid_words(center_letter, letters)
-    print(valid_words)
+    hints = generate_hints(valid_words)
+    print(hints)
