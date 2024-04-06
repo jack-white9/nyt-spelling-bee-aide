@@ -30,6 +30,7 @@ def generate_hints(word_list):
         You must take the following words and create crossword-style hints for each word.
         The list must be numbered.
         Append each hint with the length of the solution word.
+        Categorise the hints by the first two letters of the solution word.
     """
 
     response = openai_client.chat.completions.create(
